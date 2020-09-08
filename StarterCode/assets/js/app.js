@@ -1,12 +1,9 @@
-// read csv and plot graphs using svg .
+// Code Here
 
-// Scatter plot.
-
-// Chart area
+// Chart area and set margins
 var svgWidth = 900;
 var svgHeight = 500;
 
-//Define Margins.
 var margin = {
   top: 20,
   right: 100,
@@ -14,11 +11,11 @@ var margin = {
   left: 100
 };
 
-// Chart Area  minus Margins.
+// Subtract margins from total chart area
 var chartHeight = svgHeight - margin.top - margin.bottom;
 var chartWidth  = svgWidth - margin.left - margin.right;
 
-// create svg container and move contents over by the margins using transform/translate.
+// SVG container
 var svg = d3
     .select('#scatter')
     .append('svg')
@@ -28,17 +25,15 @@ var svg = d3
     .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
 var chartGroup = svg.append("g")
-// Move contents over beside the Margins
-// .attr("transform", `translate(${margin.left}, ${margin.top})`);
 
 // Read from data.csv
 d3.csv("data.csv", function(err, data) {
-    //d3.csv("/data/data.csv", function(err, data) {
-    if (err) throw err;
-    //if (error) return console.warn(error);
-    console.log(data)
     
-    //loop through the csv file & .
+    if (err) throw err;
+    
+    console.log(data);
+    
+    // Loop through data
     for (var i = 0; i < data.length; i++) {
         console.log(i, data[i].state, data[i].poverty, data[i].healthcare );
         console.log(i, data[i].obesity, data[i].income  );
@@ -49,16 +44,15 @@ d3.csv("data.csv", function(err, data) {
         data.healthcare = +data.healthcare;
       })
   
-       // Functions to set scale y to chart height.
+       // FSet x and y scale
       var yLinearScale = d3.scaleLinear().range([chartHeight, 0]);
-      // scale x to chart width.
       var xLinearScale = d3.scaleLinear().range([0, chartWidth]);
   
-      // Create Axis functions
+      // Create funxtions for each axis
       var bottomAxis = d3.axisBottom(xLinearScale);
       var leftAxis = d3.axisLeft(yLinearScale);
   
-      // Scale the domain
+      // Scale 
       xLinearScale.domain([8,
           d3.max(data, function(data) {
           return +data.poverty * 1.05;
@@ -71,8 +65,7 @@ d3.csv("data.csv", function(err, data) {
         }),
       ]);
   
-    
-      // Create tool tip
+      // Tool tip
       var toolTip = d3
         .tip()
         .attr('class', 'tooltip')
@@ -89,7 +82,7 @@ d3.csv("data.csv", function(err, data) {
   
       chartGroup.call(toolTip);
       
-      // Generate Scatter Plot
+      // Create Scatter
       chartGroup
       .selectAll('circle')
       .data(brfssdata)
@@ -105,15 +98,16 @@ d3.csv("data.csv", function(err, data) {
       .attr('fill', 'lightgreen')
       .attr('fill-opacity',0.6)
       
-      // Display tooltip on mouseover. 
+      // Mouseover
       .on("mouseover",function(data) {
         toolTip.show(data);
       })
-      // Hide and Show on mouseout
+      // Mouseout
       .on("mouseout", function(data, index) {
         toolTip.hide(data);
       });
-  
+
+      // CG1
       chartGroup
         .append('g')
         .attr('transform', `translate(0, ${chartHeight})`)
@@ -135,7 +129,8 @@ d3.csv("data.csv", function(err, data) {
       .attr("font-size", "10px")
       .attr("fill", "black")
       .style("text-anchor", "middle");
-  
+
+      // CG2
       chartGroup
         .append('text')
         .attr('transform', 'rotate(-90)')
@@ -145,7 +140,7 @@ d3.csv("data.csv", function(err, data) {
         .attr('class', 'axisText')
         .text('No Healthcare (%)');
   
-      // x-axis labels
+      // Label the x axis
       chartGroup
         .append('text')
         .attr(
